@@ -116,6 +116,35 @@ Deletes all pending maintenance entries for the linked item.
 | --- | --- | --- |
 | `entity_id` | yes | Any entity whose device is linked to a HomeBox item |
 
+### `homebox.check_in`
+
+Records that an item has been checked, for example when an NFC tag on it is scanned. If the item has a pending maintenance entry with the given name, it is marked completed today; otherwise a new entry that is already completed today is created. Either way the item ends up with a completed entry dated today, so HomeBox's maintenance history shows when the item was last confirmed.
+
+Identify the item with exactly one of `entity_id`, `asset_id` or `hb_item_id`. Items do not need to be linked to a HA device when you use `asset_id` or `hb_item_id`.
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `entity_id` | one of three | Any entity whose device is linked to a HomeBox item |
+| `asset_id` | one of three | HomeBox asset ID as printed on the label, such as `000-042` |
+| `hb_item_id` | one of three | HomeBox item (entity) UUID |
+| `name` | no | Maintenance entry name to complete or create (default `Check-in`) |
+| `description` | no | Note stored on a newly created entry |
+
+The action returns a response (`action` of `created` or `completed`, `count`, `hb_item_id`) that automations can use.
+
+**Example: tap an NFC tag to confirm an item is still there.** Register the tag in Home Assistant (Settings → Tags), then:
+
+```yaml
+automation:
+  trigger:
+    - trigger: tag
+      tag_id: "<your-tag-id>"
+  action:
+    - action: homebox.check_in
+      data:
+        asset_id: "000-042"
+```
+
 **Example automation:** When a sensor reports a warning, log it as a maintenance task:
 
 ```yaml

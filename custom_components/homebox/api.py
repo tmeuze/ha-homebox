@@ -696,6 +696,21 @@ class HomeBoxApiClient:
         payload["tagIds"] = hb_tag_ids
         await self.async_update_hb_item(hb_item_id, payload)
 
+    async def async_get_hb_item_id_by_asset_id(self, asset_id: str) -> str | None:
+        """Return the HomeBox entity ID for an asset ID such as 000-042, if any."""
+        data = await self._async_request_json(
+            "GET",
+            f"v1/assets/{asset_id.strip()}",
+            auth_required=True,
+            error_context="asset lookup",
+        )
+        items = data.get("items") if isinstance(data, dict) else None
+        if not isinstance(items, list) or not items:
+            return None
+        first = items[0]
+        item_id = first.get("id") if isinstance(first, dict) else None
+        return item_id if isinstance(item_id, str) and item_id else None
+
     async def async_get_hb_item_maintenance(
         self, hb_item_id: str, *, status: str = "both"
     ) -> list[dict[str, Any]]:
@@ -732,21 +747,29 @@ class HomeBoxApiClient:
         *,
         name: str,
         description: str,
-        scheduled_date: str,
+        scheduled_date: str | None = None,
+        completed_date: str | None = None,
         cost: str = "0",
     ) -> str:
-        """Create maintenance entry for a HomeBox entity and return entry ID."""
+        """Create maintenance entry for a HomeBox entity and return entry ID.
+
+        HomeBox requires at least one of scheduled_date / completed_date.
+        """
+        payload: dict[str, Any] = {
+            "name": name,
+            "description": description,
+            "cost": cost,
+        }
+        if scheduled_date:
+            payload["scheduledDate"] = scheduled_date
+        if completed_date:
+            payload["completedDate"] = completed_date
         data = await self._async_request_json(
             "POST",
             f"v1/entities/{hb_item_id}/maintenance",
             auth_required=True,
             error_context="create entity maintenance",
-            payload={
-                "name": name,
-                "description": description,
-                "scheduledDate": scheduled_date,
-                "cost": cost,
-            },
+            payload=payload,
         )
         if not isinstance(data, dict):
             raise HomeBoxApiError("HomeBox create maintenance response is invalid")
@@ -762,20 +785,24 @@ class HomeBoxApiClient:
         name: str,
         description: str,
         scheduled_date: str,
+        completed_date: str | None = None,
         cost: str = "0",
     ) -> None:
-        """Update a HomeBox maintenance entry."""
+        """Update a HomeBox maintenance entry (set completed_date to complete it)."""
+        payload: dict[str, Any] = {
+            "name": name,
+            "description": description,
+            "scheduledDate": scheduled_date,
+            "cost": cost,
+        }
+        if completed_date:
+            payload["completedDate"] = completed_date
         data = await self._async_request_json(
             "PUT",
             f"v1/maintenance/{maintenance_id}",
             auth_required=True,
             error_context="maintenance update",
-            payload={
-                "name": name,
-                "description": description,
-                "scheduledDate": scheduled_date,
-                "cost": cost,
-            },
+            payload=payload,
         )
         if not isinstance(data, dict):
             raise HomeBoxApiError("HomeBox maintenance update response is invalid")

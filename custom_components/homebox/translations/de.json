@@ -181,5 +181,13 @@
                 "name": "Gesamtwert"
             }
         }
+    },
+    "exceptions": {
+        "asset_not_found": {
+            "message": "Kein HomeBox-Artikel mit der Asset-ID {asset_id} gefunden."
+        },
+        "no_loaded_entry": {
+            "message": "Keine geladene HomeBox-Integration gefunden."
+        }
     }
 }

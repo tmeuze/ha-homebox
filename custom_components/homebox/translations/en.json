@@ -181,5 +181,13 @@
                 "name": "Total value"
             }
         }
+    },
+    "exceptions": {
+        "asset_not_found": {
+            "message": "No HomeBox item found with asset ID {asset_id}."
+        },
+        "no_loaded_entry": {
+            "message": "No loaded HomeBox config entry."
+        }
     }
 }

@@ -66,3 +66,46 @@ clear_maintenance:
       required: true
       selector:
         entity:
+
+check_in:
+  name: Check in item
+  description: >
+    Records that an item has been checked, for example when an NFC tag on it is
+    scanned. If the item has a pending maintenance entry with the given name it
+    is marked completed today; otherwise a new entry already completed today is
+    created. Identify the item by linked entity, HomeBox item ID, or asset ID.
+  fields:
+    entity_id:
+      name: Entity
+      description: Any entity whose device is linked to a HomeBox item.
+      required: false
+      selector:
+        entity:
+    asset_id:
+      name: Asset ID
+      description: HomeBox asset ID, as printed on the label.
+      required: false
+      example: "000-042"
+      selector:
+        text:
+    hb_item_id:
+      name: HomeBox item ID
+      description: HomeBox item (entity) UUID.
+      required: false
+      selector:
+        text:
+    name:
+      name: Name
+      description: Name of the maintenance entry to complete or create.
+      required: false
+      default: "Check-in"
+      selector:
+        text:
+    description:
+      name: Description
+      description: Optional note stored on a newly created entry.
+      required: false
+      default: ""
+      selector:
+        text:
+          multiline: true
