@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.3] - 2026-11-24
+
 ### Fixed
 
 - Linked-device sensors (linked HomeBox ID, battery depletion date) now attach to the original Home Assistant device instead of creating a separate "HomeBox" device for each linked item. Home Assistant 2026.x gives each device a single config entry, so identifiers copied from another integration's device created a duplicate. Existing duplicates are removed on startup and their entities relinked to the original devices.
