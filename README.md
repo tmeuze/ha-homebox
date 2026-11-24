@@ -5,6 +5,25 @@ A custom Home Assistant integration that connects to [HomeBox](https://github.co
 [![Open your Home Assistant instance and add this repository inside HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=JeffreyDissmann&repository=ha-homebox&category=integration)
 [![Open your Home Assistant instance and start setting up HomeBox](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=homebox)
 
+## About this fork
+
+This is a fork of [JeffreyDissmann/ha-homebox](https://github.com/JeffreyDissmann/ha-homebox) with fixes for Home Assistant 2026.x and the current HomeBox. The same changes are proposed upstream in [pull request #13](https://github.com/JeffreyDissmann/ha-homebox/pull/13). Once that is merged and released, the upstream integration is the one to use.
+
+What the fork changes:
+
+- **No more duplicate devices.** Home Assistant 2026.x lets a device belong to only one integration, so the linked-device sensors used to create a separate "HomeBox" device for every linked item. They now attach to your original device. Duplicates from earlier versions are removed when the integration starts, and their entities move back to the original devices.
+- **No deprecation warning.** The integration no longer uses `device_registry.devices` as a mapping, which Home Assistant stops supporting in 2027.9.0.
+- **Creating and linking items works on a fresh HomeBox.** HomeBox only creates its default location type the first time something needs it, so on a group that had never used locations, creating a linked item failed with "No location entity type found in HomeBox". The integration now creates that type when it's missing.
+- **Clearer area sync errors.** The "Unable to sync Home Assistant areas" warning now includes the underlying error.
+
+To install it through HACS:
+
+1. In HACS, open the three-dot menu and choose **Custom repositories**.
+2. Enter `https://github.com/tmeuze/ha-homebox`, set the type to **Integration**, and add it.
+3. Search for HomeBox in HACS, download it, and restart Home Assistant.
+
+If you already have the upstream integration installed, remove its repository from HACS first so the two don't compete. Your existing HomeBox setup keeps working because the integration's domain hasn't changed.
+
 ## Features
 
 - UI config flow (`host`, `username`, `password`, integration name, optional area)
